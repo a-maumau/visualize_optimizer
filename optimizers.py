@@ -208,7 +208,7 @@ class AdamOptimizer(Optimizer):
 		super(AdamOptimizer, self).__init__(f, init_pos, learning_rate, name, color)
 		self.m = np.zeros_like(init_pos)
 		self.v = np.zeros_like(init_pos)
-		self.eps = eps 						# 論文では1e-6推奨らしい。
+		self.eps = eps
 		self.alpha = alpha
 		self.beta_1 = beta_1
 		self.beta_1_ = 1.0-beta_1
