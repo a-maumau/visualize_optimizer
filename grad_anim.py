@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
+all-in-one version
+
 Author : mau
 Tested in python2
 Thank to the all samples in the Internet.
@@ -428,7 +430,7 @@ def main():
 
 	# 描画のためのセットアップ
 	plot = Drawer(fig, ax2d, ax3d, [gd_opt, sgd_opt, mom_opt, ada_grad_opt, rmsp_opt, rmsp_mom_opt, ada_del_opt, adam_opt], G)
-	
+
 	# アニメーション作成
 	ani = animation.FuncAnimation(fig, plot.draw, frames = 300, interval = 50) 
 
