@@ -39,7 +39,7 @@ def main():
 	#　設定書くと見づらいからプリセットを使う
 	preset = Preset()
 
-	optimizer_list, graph = preset.preset_1()
+	optimizer_list, graph = preset.preset_4()
 
 	# 描画のためのセットアップ
 	plot = Drawer(fig, ax2d, ax3d, optimizer_list, graph)

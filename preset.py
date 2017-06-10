@@ -8,6 +8,7 @@ from functions import *
 	
 class Preset():
 
+	# 比の違う２次関数
 	def preset_1(self):
 		# グラフと範囲 基本にはグラフの探索範囲に合わせると良い。
 		learning_rate = 0.1
@@ -22,7 +23,7 @@ class Preset():
 		init_pos = np.array([-8.0,-4.0])
 		# 最適化er
 		gd_opt = GDOptimizer(G.f, init_pos, learning_rate, "GD", "red")
-		#sgd_opt = SGDOptimizer(G.f, init_pos, learning_rate, "SGD", "firebrick")
+		#sgd_opt = SGDOptimizer(G.f, init_pos, learning_rate, name="SGD", color="firebrick")
 		mom_opt = MomentumOptimizer(G.f, init_pos, learning_rate, momentum=momentum, name="Mom", color="green")
 		nag_opt = NAGOptimizer(G.f, init_pos, learning_rate, momentum, "NAG", "lime")
 		ada_grad_opt = AdaGradOptimizer(G.f, init_pos, learning_rate, eps=1e-7, name="AdaGrad", color="yellow")
@@ -31,13 +32,12 @@ class Preset():
 		ada_del_opt = AdaDeltaOptimizer(G.f, init_pos, gamma=0.9, eps=1e-2, name="AdaDelta", color="purple")
 		adam_opt = AdamOptimizer(G.f, init_pos, alpha=0.2, beta_1=0.8, beta_2=0.9, eps=1e-7, name="Adam", color="deeppink")
 
-		return [gd_opt, mom_opt, ada_grad_opt, rmsp_opt, rmsp_mom_opt, ada_del_opt, adam_opt], G
+		return [gd_opt, mom_opt, nag_opt, ada_grad_opt, rmsp_opt, rmsp_mom_opt, ada_del_opt, adam_opt], G
 
 	def preset_2(self):
 		# グラフと範囲 基本にはグラフの探索範囲に合わせると良い。
 		learning_rate = 2.0 #five-wellでちょうどいい感じ
 		momentum = 0.7
-		np.random.seed(1192)
 		
 		x0 = np.arange(-20.0, 20.0, 0.25)
 		x1 = np.arange(-20.0, 20.0, 0.25)
@@ -58,7 +58,7 @@ class Preset():
 		ada_del_opt = AdaDeltaOptimizer(G.f, init_pos, gamma=0.9, eps=1e-2, name="AdaDelta", color="purple")
 		adam_opt = AdamOptimizer(G.f, init_pos, alpha=0.2, beta_1=0.8, beta_2=0.9, eps=1e-7, name="Adam", color="deeppink")
 
-		return [gd_opt, mom_opt, ada_grad_opt, rmsp_opt, rmsp_mom_opt, ada_del_opt, adam_opt], G
+		return [gd_opt, mom_opt, nag_opt, ada_grad_opt, rmsp_opt, rmsp_mom_opt, ada_del_opt, adam_opt], G
 
 	def preset_3(self):
 		learning_rate = 0.05
@@ -73,7 +73,6 @@ class Preset():
 		init_pos = np.array([-2.0,-4.0])
 		# 最適化er
 		gd_opt = GDOptimizer(G.f, init_pos, learning_rate, "GD", "red")
-		#sgd_opt = SGDOptimizer(G.f, init_pos, learning_rate, "SGD", "firebrick")
 		mom_opt = MomentumOptimizer(G.f, init_pos, learning_rate, momentum=momentum, name="Mom", color="green")
 		nag_opt = NAGOptimizer(G.f, init_pos, learning_rate, momentum, "NAG", "lime")
 		ada_grad_opt = AdaGradOptimizer(G.f, init_pos, learning_rate, eps=1e-7, name="AdaGrad", color="yellow")
@@ -82,5 +81,27 @@ class Preset():
 		ada_del_opt = AdaDeltaOptimizer(G.f, init_pos, gamma=0.9, eps=1e-2, name="AdaDelta", color="purple")
 		adam_opt = AdamOptimizer(G.f, init_pos, alpha=0.2, beta_1=0.8, beta_2=0.9, eps=1e-7, name="Adam", color="deeppink")
 
-		return [gd_opt, mom_opt, ada_grad_opt, rmsp_opt, rmsp_mom_opt, ada_del_opt, adam_opt], G
+		return [gd_opt, mom_opt, nag_opt, ada_grad_opt, rmsp_opt, rmsp_mom_opt, ada_del_opt, adam_opt], G
+
+	# 確率的（ノイズというなの乱数入れてるだけの実装）な勾配法のイメージ
+	def preset_4(self):
+		learning_rate = 3.0
+		momentum = 0.7
+		np.random.seed(7)
+
+		x0 = np.arange(-20.0, 20.0, 0.25)
+		x1 = np.arange(-20.0, 20.0, 0.25)
+		f = FiveWellPotentialFunction_mod()
+		G = Graph(x0, x1, f())
+
+		# 初期値
+		init_pos = np.array([-4.0,-4.0])
+		# 最適化er
+		gd_opt = GDOptimizer(G.f, init_pos, learning_rate, "GD", "red")
+		mom_opt = MomentumOptimizer(G.f, init_pos, learning_rate, momentum=momentum, name="Mom", color="green")
+
+		sgd_opt = SGDOptimizer(G.f, init_pos, learning_rate,
+								noize_vec_mul=10.0, noize_vec_negbias=0.5, noize_const_mul=2.0, noize_const_negbias=1.0, name="SGD", color="blue")
+
+		return [gd_opt, sgd_opt, mom_opt], G
 
