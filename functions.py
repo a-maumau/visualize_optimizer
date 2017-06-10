@@ -8,6 +8,7 @@ import math
 # 激しいのは割愛。
 # classにする意味はないのかもしれない・・・
 
+# インタフェース
 class Function:
 	__metaclass__ = abc.ABCMeta
 

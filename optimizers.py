@@ -2,10 +2,11 @@
 
 import numpy as np
 import abc
+
 # 数値微分の微小区間値
 delta = 1e-4
 
-# 最適化手法
+# 最適化手法　インタフェース
 class Optimizer(object):
 	__metaclass__ = abc.ABCMeta
 
@@ -59,11 +60,10 @@ class GDOptimizer(Optimizer):
 	def optimize(self):
 		for i, _ in enumerate(self.x):
 			# i 番目の変数で偏微分する
-			self.gradient[i] = -self.numerical_diff(self.x, i)*self.learning_rate
-
-		# = grad#-grad*self.learning_rate
+			self.gradient[i] = self.numerical_diff(self.x, i)
+		
 		# 更新
-		self.next_pos = self.x + self.gradient
+		self.next_pos = self.x - self.learning_rate*self.gradient
 
 # 擬似的なSGD
 class SGDOptimizer(Optimizer):
@@ -76,54 +76,61 @@ class SGDOptimizer(Optimizer):
 	
 	def optimize(self):
 		# 勾配を入れるベクトルをゼロで初期化する
-		grad = np.zeros_like(self.x)
+		_grad = np.zeros_like(self.x)
 
 		for i, _ in enumerate(self.x):
 			# i 番目の変数で偏微分する + ノイズを入れる。
-			self.gradient[i] = self.numerical_diff(self.x, i)*(np.random.random()*self.noize_vec_mul - self.noize_vec_negbias) + (np.random.random()*self.noize_const_mul - self.noize_const_negbias)
+			self.gradient[i] = self.numerical_diff(self.x, i)
+			_grad[i] = self.gradient*(np.random.random()*self.noize_vec_mul - self.noize_vec_negbias) + (np.random.random()*self.noize_const_mul - self.noize_const_negbias)
 
 		# 更新
-		self.next_pos = self.x  -self.gradient*self.learning_rate
+		self.next_pos = self.x  -self.learning_rate*_grad
 
 # Momentum
 class MomentumOptimizer(Optimizer):
 	def __init__(self, f, init_pos, learning_rate=0.01, momentum=0.9, name=None, color="red"):
 		super(MomentumOptimizer, self).__init__(f, init_pos, learning_rate, name, color)
 		self.momentum = momentum
+		self.v = np.zeros_like(self.x)
 
 	def optimize(self):
-		# 勾配を入れるベクトルをゼロで初期化する
-		grad = np.zeros_like(self.x)
-
 		for i, _ in enumerate(self.x):
 			# i 番目の変数で偏微分する
-			grad[i] = -self.numerical_diff(self.x, i)*self.learning_rate
+			self.gradient[i] = self.numerical_diff(self.x, i)
 
-		self.gradient = self.momentum*self.gradient + grad
+		self.v = self.momentum*self.v -self.learning_rate*self.gradient
+		
 		# 更新
-		self.next_pos = self.x + self.gradient
+		self.next_pos = self.x + self.v
 
 # Nesterov Accelerated Gradient
 class NAGOptimizer(Optimizer):
+	"""
+	self.gradientが実際の勾配ではないことに注意。
+	"""
+
 	def __init__(self, f, init_pos, learning_rate=0.01, momentum=0.9, name=None, color="red"):
 		super(NAGOptimizer, self).__init__(f, init_pos, learning_rate, name, color)
 		self.momentum = momentum
+		self.v = np.zeros_like(self.x)
 
 	def optimize(self):
-		# 勾配を入れるベクトルをゼロで初期化する
-		grad = np.zeros_like(self.x)
-
-		self.x -= self.gradient
-		for i, _ in enumerate(self.x):
+		_x = self.x -self.momentum*self.v
+		
+		for i, _ in enumerate(_x):
 			# i 番目の変数で偏微分する
-			grad[i] = self.numerical_diff(self.x, i)*self.learning_rate
+			self.gradient[i] = self.numerical_diff(_x, i)
 
-		self.gradient = self.momentum*self.gradient + grad
+		self.v = self.momentum*self.v + self.learning_rate*self.gradient
+		
 		# 更新
-		self.next_pos = self.x  -self.gradient
+		self.next_pos = self.x - self.v
 
 # AdaGrad
 class AdaGradOptimizer(Optimizer):
+	"""
+	学習率小さいと初動までに時間がかかる大き目が推奨か
+	"""
 	def __init__(self, f, init_pos, learning_rate=0.01, eps=1e-7, name=None, color="red"):
 		super(AdaGradOptimizer, self).__init__(f, init_pos, learning_rate, name, color)
 		self.h = np.zeros_like(init_pos)
@@ -135,8 +142,9 @@ class AdaGradOptimizer(Optimizer):
 			self.gradient[i] = self.numerical_diff(self.x, i)
 
 		self.h = self.h + self.gradient*self.gradient
+		
 		# 更新
-		self.next_pos = self.x - self.gradient*self.learning_rate/np.sqrt(self.h+self.eps)
+		self.next_pos = self.x -self.learning_rate*self.gradient/np.sqrt(self.h+self.eps)
 
 # RMSprop
 class RMSpropOptimizer(Optimizer):
@@ -153,33 +161,36 @@ class RMSpropOptimizer(Optimizer):
 			self.gradient[i] = self.numerical_diff(self.x, i)
 
 		self.h = self.alpha*self.h + self.alpha_*self.gradient*self.gradient
+		
 		# 更新
-		self.next_pos = self.x -self.gradient*self.learning_rate/(np.sqrt(self.h)+self.eps)
+		self.next_pos = self.x -self.learning_rate*self.gradient/(np.sqrt(self.h)+self.eps)
 
 # RMSprop
 class RMSpropMomentumOptimizer(Optimizer):
+	"""
+	NAG同様、self.gradientは次の位置の勾配ということに注意。
+	"""
 	def __init__(self, f, init_pos, learning_rate=0.01, alpha=0.99, momentum=0.9, eps=1e-7, name=None, color="red"):
 		super(RMSpropMomentumOptimizer, self).__init__(f, init_pos, learning_rate, name, color)
 		self.h = np.zeros_like(init_pos)
+		self.v = np.zeros_like(init_pos)
 		self.alpha = alpha
 		self.alpha_ = 1.0 - alpha
 		self.momentum = momentum
 		self.eps = eps
 
 	def optimize(self):
-		# 勾配を入れるベクトルをゼロで初期化する
-		_grad = np.zeros_like(self.x)
-
-		_x = self.x# - self.momentum*self.gradient
+		_x = self.x - self.momentum*self.v
 
 		for i, _ in enumerate(_x):
 			# i 番目の変数で偏微分する
-			_grad = self.numerical_diff(_x, i)
+			self.gradient[i] = self.numerical_diff(_x, i)
 
-		self.h = self.alpha*self.h + self.alpha_*_grad*_grad
-		self.gradient = self.momentum*self.gradient - self.learning_rate*_grad/(np.sqrt(self.h)+self.eps)
+		self.h = self.alpha*self.h + self.alpha_*self.gradient*self.gradient
+		self.v = self.momentum*self.v - self.learning_rate*self.gradient/(np.sqrt(self.h)+self.eps)
+		
 		# 更新
-		self.next_pos = self.x + self.gradient
+		self.next_pos = self.x + self.v
 
 # AdaDelta
 class AdaDeltaOptimizer(Optimizer):
@@ -197,10 +208,11 @@ class AdaDeltaOptimizer(Optimizer):
 			self.gradient[i] = self.numerical_diff(self.x, i)
 
 		self.h = self.gamma*self.h + self.gamma_*self.gradient*self.gradient
-		v = np.sqrt(self.s+self.eps)/np.sqrt(self.h+self.eps)*self.gradient
-		self.s = self.gamma*self.s + self.gamma_*v*v
+		_v = np.sqrt(self.s+self.eps)/np.sqrt(self.h+self.eps)*self.gradient
+		self.s = self.gamma*self.s + self.gamma_*_v*_v
+
 		# 更新
-		self.next_pos = self.x - v
+		self.next_pos = self.x - _v
 
 # Adam
 class AdamOptimizer(Optimizer):
@@ -230,5 +242,39 @@ class AdamOptimizer(Optimizer):
 
 		# 更新
 		self.next_pos = self.x - self.alpha*_m/(np.sqrt(_v)+self.eps)
+
 		self.iteration_beta_1 *= self.beta_1
 		self.iteration_beta_2 *= self.beta_2
+
+# SMORMS3
+class SMORMS3Optimizer(Optimizer):
+	"""
+	ちゃんと調べてないので何かわからん。
+	RMSprop loses to SMORMS2
+	らしい
+	"""
+	def __init__(self, f, init_pos, learning_rate=0.001, eps=1e-16, name=None, color="red"): # gammaはMomentumみたいなパラメータのやつのこと。
+		super(SMORMS3Optimizer, self).__init__(f, init_pos, learning_rate, name, color)
+		self.v = np.zeros_like(init_pos)
+		self.r = np.zeros_like(init_pos)
+		self.s = np.zeros_like(init_pos) + 1.0
+		self.eps = eps
+		self.alpha = np.zeros_like(init_pos) + learning_rate
+
+	def optimize(self):
+		_beta = 1.0/(1.0+self.s)
+
+		for i, _ in enumerate(self.x):
+			# i 番目の変数で偏微分する
+			self.gradient[i] = self.numerical_diff(self.x, i)
+
+		self.v = _beta*self.v + (1-_beta)*self.gradient
+		self.r = _beta*self.r + (1-_beta)*self.gradient*self.gradient
+
+		_vec = self.v**2/(self.r+self.eps)
+
+		# 更新
+		self.next_pos = self.x - np.minimum(self.alpha, _vec)/(np.sqrt(self.r)+self.eps)*self.gradient
+
+		self.s = 1.0 + (1.0 - _vec)*self.s
+
