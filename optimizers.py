@@ -22,8 +22,8 @@ class Optimizer(object):
 
 	def numerical_diff(self, x, i):
 		"""
-		#中央差分・数値微分
-		#i : 偏微分する変数のインデックス
+		中央差分・数値微分
+		i : 偏微分する変数のインデックス
 		"""
 		h_vec = np.zeros_like(x)
 		h_vec[i] = delta
@@ -36,7 +36,12 @@ class Optimizer(object):
 		"""
 		各optimizerに合わせた実装に。
 		一応gradientの表示等のことを考えて、
-		gradientに勾配値を、next_posには次の更新点 pos - gradの結果を入れる形で。
+		gradientに勾配値を、next_posには次の更新点 pos -gradの結果を入れる形で。
+
+		基本的には
+		self.gradient, self.next_pos
+		だけを更新する。
+		self.xはself.updateにおいてx=next_posとされる。
 		"""
 		raise NotImplementedError()
 		
@@ -108,7 +113,6 @@ class NAGOptimizer(Optimizer):
 	"""
 	self.gradientが実際の勾配ではないことに注意。
 	"""
-
 	def __init__(self, f, init_pos, learning_rate=0.01, momentum=0.9, name=None, color="red"):
 		super(NAGOptimizer, self).__init__(f, init_pos, learning_rate, name, color)
 		self.momentum = momentum

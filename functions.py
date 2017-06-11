@@ -17,6 +17,10 @@ class Function:
 
 	@abc.abstractmethod
 	def function(self, x):
+		"""
+		x : list x[0], x[1]だけを使うように。
+		関数の値を返すように設計して
+		"""
 		raise NotImplementedError()
 
 class AckleyFunction(Function):

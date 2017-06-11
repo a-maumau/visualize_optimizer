@@ -39,6 +39,7 @@ class Drawer():
 		"""
 		frames : iteration数
 		interval : 指定msごとにコールバックがかかる。書き出す場合は実質のfps
+		実際には処理が重くて表示だけする際にはintervalの値に間に合ってない。
 		"""
 		self.frames = frames
 		self.interval = interval
@@ -63,12 +64,14 @@ class Drawer():
 
 		self.ax3d.view_init(40, rotating_per_step*step)
 
+		# グラフと等高図の描画
 		self.ax3d.plot_surface(self.graph_mesh[0], self.graph_mesh[1], self.graph_mesh[2], alpha = 0.5, cmap=plt.cm.coolwarm)
 		self.ax2d.contourf(self.graph_mesh[0], self.graph_mesh[1], self.graph_mesh[2], zdir='z', offset=-1, cmap=plt.cm.coolwarm)
 
 		for index, optimizer in enumerate(self.optimizers):
 			optimizer.update()
 
+			# 移動経路用に位置を保存
 			pos = optimizer.pos()
 			self.pos_array[index][0].append(pos[0])
 			self.pos_array[index][1].append(pos[1])
@@ -89,6 +92,7 @@ class Drawer():
 			#self.ax3d.plot([pos[0], pos[0]-grad[0]/grad_norm*gradient_vec_len], [pos[1], pos[1]-grad[1]/grad_norm*gradient_vec_len], zs=[pos[2], pos[2]], c='green')
 			self.ax2d.plot([pos[0], pos[0]-grad[0]/grad_norm*gradient_vec_len], [pos[1], pos[1]-grad[1]/grad_norm*gradient_vec_len], c='black')
 
+		# 凡例用
 		# 0.99系での応急処置
 		plt.legend(loc="upper center", 
 				   bbox_to_anchor=(-0.1,-0.08), # 描画領域の少し下にBboxを設定

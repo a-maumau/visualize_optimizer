@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from optimizers import *
 from graph import Graph
+from optimizers import *
 from functions import *
 
 class Preset():
