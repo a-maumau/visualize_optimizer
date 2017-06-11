@@ -25,11 +25,11 @@ class Function:
 
 class AckleyFunction(Function):
 	"""
-		ackley's function
-		search range
-			x0 = [-32.768, -32.768]
-			x1 = [-32.768, -32.768]
-		global min : f(0, 0) = 0
+	ackley's function
+	search range
+		x0 = [-32.768, -32.768]
+		x1 = [-32.768, -32.768]
+	global min : f(0, 0) = 0
 	"""
 
 	def function(self, x):
