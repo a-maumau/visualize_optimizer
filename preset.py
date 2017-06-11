@@ -5,7 +5,6 @@ from optimizers import *
 from graph import Graph
 from functions import *
 
-	
 class Preset():
 	# 比の違う２次関数
 	def preset_1(self):
