@@ -22,7 +22,7 @@ def main():
 	preset = Preset()
 
 	# このコメント書いてる時は1~9のプリセット
-	optimizer_list, graph = preset.preset_1()
+	optimizer_list, graph = preset.preset_0()
 
 	# 描画のためのセットアップ
 	drawer = Drawer(optimizer_list, graph)

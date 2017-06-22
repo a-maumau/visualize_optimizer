@@ -72,6 +72,23 @@ class GDOptimizer(Optimizer):
 
 # 擬似的なSGD
 class SGDOptimizer(Optimizer):
+	def __init__(self, f, init_pos, learning_rate=0.01, momentum=0.9, noize_vec_mul=2.0, noize_vec_negbias=0.3, name=None, color="red"):
+		super(SGDOptimizer, self).__init__(f, init_pos, learning_rate, name, color)
+		self.noize_vec_mul = noize_vec_mul
+		self.noize_vec_negbias = noize_vec_negbias
+	
+	def optimize(self):
+		_x = self.x - [ (np.random.random()*self.noize_vec_mul - self.noize_vec_negbias) for i in range(len(self.x))]
+
+		for i, _ in enumerate(_x):
+			# i 番目の変数で偏微分する + ノイズを入れる。
+			self.gradient[i] = self.numerical_diff(_x, i)
+
+		# 更新
+		self.next_pos = self.x  -self.learning_rate*self.gradient
+
+# 擬似的な?SGD
+class SGDOptimizer_(Optimizer):
 	def __init__(self, f, init_pos, learning_rate=0.01, momentum=0.9, noize_vec_mul=2.0, noize_vec_negbias=0.3, noize_const_mul=1.0, noize_const_negbias=0.5,name=None, color="red"):
 		super(SGDOptimizer, self).__init__(f, init_pos, learning_rate, name, color)
 		self.noize_vec_mul = noize_vec_mul
@@ -135,7 +152,7 @@ class AdaGradOptimizer(Optimizer):
 	"""
 	学習率小さいと初動までに時間がかかる大き目が推奨か
 	"""
-	def __init__(self, f, init_pos, learning_rate=0.01, eps=1e-7, name=None, color="red"):
+	def __init__(self, f, init_pos, learning_rate=0.001, eps=1e-8, name=None, color="red"):
 		super(AdaGradOptimizer, self).__init__(f, init_pos, learning_rate, name, color)
 		self.h = np.zeros_like(init_pos)
 		self.eps = eps
@@ -220,7 +237,7 @@ class AdaDeltaOptimizer(Optimizer):
 
 # Adam
 class AdamOptimizer(Optimizer):
-	def __init__(self, f, init_pos, learning_rate=0.01, alpha=0.001, beta_1=0.9, beta_2=0.999, eps=1e-7, name=None, color="red"): # gammaはMomentumみたいなパラメータのやつのこと。
+	def __init__(self, f, init_pos, learning_rate=0.001, alpha=0.001, beta_1=0.9, beta_2=0.999, eps=1e-8, name=None, color="red"): # gammaはMomentumみたいなパラメータのやつのこと。
 		super(AdamOptimizer, self).__init__(f, init_pos, learning_rate, name, color)
 		self.m = np.zeros_like(init_pos)
 		self.v = np.zeros_like(init_pos)

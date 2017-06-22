@@ -23,6 +23,15 @@ class Function:
 		"""
 		raise NotImplementedError()
 
+class SimpleFunction1(Function):
+	"""
+	シンプルに。
+	意外とこの手の鞍点が実際には多いらしい。
+	"""
+
+	def function(self, x):
+		return 1/10.0*(x[0]**2-x[1]**2)
+
 class AckleyFunction(Function):
 	"""
 	ackley's function
