@@ -27,7 +27,7 @@ class Preset():
 		#sgd_opt = SGDOptimizer_(G.f, init_pos, learning_rate, name="SGD", color="firebrick")
 		mom_opt = MomentumOptimizer(G.f, init_pos, learning_rate, momentum=momentum, name="Mom", color="green")
 		nag_opt = NAGOptimizer(G.f, init_pos, learning_rate, momentum, "NAG", "lime")
-		ada_grad_opt = AdaGradOptimizer(G.f, init_pos, learning_rate, eps=1e-7, name="AdaGrad", color="yellow")
+		ada_grad_opt = AdaGradOptimizer(G.f, init_pos, learning_rate, eps=1e-4, name="AdaGrad", color="yellow")
 		rmsp_opt = RMSpropOptimizer(G.f, init_pos, learning_rate, alpha=0.9, name="RMSprop", color="blue")
 		rmsp_mom_opt = RMSpropMomentumOptimizer(G.f, init_pos, learning_rate, alpha=0.2, momentum=momentum, name="RMSprop+Momentum", color="cyan")
 		ada_del_opt = AdaDeltaOptimizer(G.f, init_pos, gamma=0.9, eps=1e-3, name="AdaDelta", color="purple")

@@ -154,7 +154,7 @@ class AdaGradOptimizer(Optimizer):
 	"""
 	def __init__(self, f, init_pos, learning_rate=0.001, eps=1e-8, name=None, color="red"):
 		super(AdaGradOptimizer, self).__init__(f, init_pos, learning_rate, name, color)
-		self.h = np.zeros_like(init_pos)
+		self.h = np.zeros_like(eps)
 		self.eps = eps
 
 	def optimize(self):
