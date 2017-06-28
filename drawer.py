@@ -47,7 +47,7 @@ class Drawer():
 	def animation(self):
 		self.anime = animation.FuncAnimation(self.fig, self.draw, frames=self.anime_frames, interval=self.anime_interval)
 
-	def save_animation(save_name="animation.gif", save_dir="./"):
+	def save_animation(self, save_name="animation.gif", save_dir="./"):
 		self.anime.save(save_dir+save_name, writer='imagemagick')
 
 	def show(self):

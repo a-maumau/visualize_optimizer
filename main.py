@@ -22,7 +22,7 @@ def main():
 	preset = Preset()
 
 	# このコメント書いてる時は1~9のプリセット
-	optimizer_list, graph = preset.preset_0()
+	optimizer_list, graph = preset.preset_5()
 
 	# 描画のためのセットアップ
 	drawer = Drawer(optimizer_list, graph)
@@ -31,9 +31,9 @@ def main():
 	drawer.animation()
 
 	# 保存
-	#drawer.save_animation("optimization")
+	drawer.save_animation("optimization_NAG.gif", "./")
 	# 表示
-	drawer.show()
+	#drawer.show()
 
 if __name__ == '__main__':
 	main()

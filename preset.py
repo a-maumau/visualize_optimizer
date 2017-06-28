@@ -56,7 +56,7 @@ class Preset():
 		nag_opt = NAGOptimizer(G.f, init_pos, learning_rate, momentum, "NAG", "lime")
 		ada_grad_opt = AdaGradOptimizer(G.f, init_pos, learning_rate, eps=1e-7, name="AdaGrad", color="yellow")
 		rmsp_opt = RMSpropOptimizer(G.f, init_pos, learning_rate, alpha=0.9, name="RMSprop", color="blue")
-		rmsp_mom_opt = RMSpropMomentumOptimizer(G.f, init_pos, learning_rate, alpha=0.2, momentum=momentum, name="RMSprop+Momentum", color="cyan")
+		rmsp_mom_opt = RMSpropMomentumOptimizer(G.f, init_pos, learning_rate, alpha=0.5, momentum=momentum, name="RMSprop+Momentum", color="cyan")
 		ada_del_opt = AdaDeltaOptimizer(G.f, init_pos, gamma=0.9, eps=1e-2, name="AdaDelta", color="purple")
 		adam_opt = AdamOptimizer(G.f, init_pos, alpha=0.2, beta_1=0.8, beta_2=0.9, eps=1e-7, name="Adam", color="deeppink")
 
