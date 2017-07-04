@@ -4,7 +4,7 @@
 Author : mau
 Tested in python2
 Thank to the all samples in the Internet.
-Following code is not checking argments
+Following code is not checking arguments.
 """
 from preset import Preset
 from drawer import Drawer
