@@ -31,9 +31,9 @@ def main():
 	drawer.animation()
 
 	# 保存
-	drawer.save_animation("optimization_NAG.gif", "./")
+	#drawer.save_animation("optimization.gif", "./")
 	# 表示
-	#drawer.show()
+	drawer.show()
 
 if __name__ == '__main__':
 	main()
